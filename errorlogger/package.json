@@ -1,0 +1,35 @@
+{
+  "name": "errorlogger",
+  "version": "0.0.1",
+  "description": "errorlogger node.js library",
+  "main": "./lib/errorlogger.js",
+  "directories": {
+    "test": "test"
+  },
+  "scripts": {
+    "test": "make test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/g4code/errorlogger"
+  },
+  "keywords": [
+    "errorlogger"
+  ],
+  "author": "Drasko Gomboc <drasko.gomboc@gmail.com>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/g4code/errorlogger/issues"
+  },
+  "devDependencies": {
+    "mocha": "*",
+    "chai": "*"
+  },
+  "dependencies": {
+    "underscore": "*",
+    "commander" : "*"
+  }
+  "bin": {
+    "errorlogger": "./bin/errorlogger.js"
+  }
+}
