@@ -2,7 +2,7 @@
   "name": "errorlogger",
   "version": "0.0.1",
   "description": "errorlogger node.js library",
-  "main": "./lib/errorlogger.js",
+  "main": "./src/errorlogger.js",
   "directories": {
     "test": "test"
   },
@@ -26,9 +26,13 @@
     "chai": "*"
   },
   "dependencies": {
-    "underscore": "*",
-    "commander" : "*"
-  }
+    "underscore"     : "*",
+    "commander"      : "*",
+    "informer"       : "*",
+    "evento"         : "*",
+    "moment"         : "*",
+    "moment-timezone": "*"
+  },
   "bin": {
     "errorlogger": "./bin/errorlogger.js"
   }

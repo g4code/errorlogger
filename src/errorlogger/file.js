@@ -1,7 +1,8 @@
 
-var fs   = require('fs'),
-    path = require('path'),
-    _    = require('underscore');
+var fs     = require('fs'),
+    path   = require('path'),
+    _      = require('underscore'),
+    Data   = require('./data');
 
 function File(filename, dir) {
 
@@ -20,12 +21,12 @@ File.prototype = {
 
     addToSolr: function()
     {
-        
+
     },
 
     remove: function()
     {
-        
+
     },
 
     isFilenameCorrect: function()
@@ -33,19 +34,12 @@ File.prototype = {
         return /____json__.+\.log/.test(this.filename);
     },
 
-    onParseData: function(data, key)
+    onParseData: function(rawData, key)
     {
-        if (data.length > 0) {
-            try {
-                var parsedData = JSON.parse(data);
-                parsedData.trace   = JSON.stringify(parsedData.trace);
-                parsedData.context = JSON.stringify(parsedData.context);
-                this.data.push(parsedData);
-            } catch(err) {
-                console.log("filename: " + this.filename);
-                console.log("line: " + key)
-                console.log(err);
-            }
+        var data = new Data(rawData, key, this.filename);
+
+        if (!data.isEmpty()) {
+            this.data.push(data.getParsed());
         }
     },
 
