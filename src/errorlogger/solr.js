@@ -10,7 +10,7 @@ function Solr(data, config, filename) {
     this.config   = config;
     this.filename = filename;
 
-    request.post(this.getUrl(), {json: data}, _.bind(this.onResponse, this));
+    request.post(this.getUrl(), {json: this.data}, _.bind(this.onResponse, this));
 };
 
 Solr.prototype = {
@@ -31,9 +31,11 @@ Solr.prototype = {
     onResponse: function(err, httpResponse, body)
     {
         if (err != null) {
-            evento.trigger("error", err);
+            evento.trigger("error", ["http", err].join(" | "));
         } else if (body.responseHeader.status > 0) {
-            evento.trigger("error", [this.filename, body.error.msg].join(" | "));
+            evento.trigger("error", ["solr", this.filename, body.error.msg].join(" | "));
+        } else {
+            evento.trigger("success", [this.filename, "saved to solr", this.data.length].join(" | "));
         }
     }
 };

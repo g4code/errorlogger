@@ -41,7 +41,7 @@ ErrorLogger.prototype = {
     onReaddir: function(err, files)
     {
         if (err) {
-            evento.trigger("error", err);
+            evento.trigger("error", ["fs.readdir", err].join(" | "));
         } else if (files.length < 0) {
             evento.trigger("info", "No files in " + path.resolve(this.config.directory));
         } else {

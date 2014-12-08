@@ -13,11 +13,13 @@ function File(filename, config) {
     this.filePath = path.resolve(this.config.directory + "/" + filename);
     this.data     = [];
     this.entries  = [];
+    this.rawData  = '';
 
     if (this.isFilenameCorrect()) {
         this.read();
+        this.parseEntities();
         this.addToSolr();
-        this.remove();
+        this.unlink();
     }
 };
 
@@ -25,12 +27,13 @@ File.prototype = {
 
     addToSolr: function()
     {
-        new Solr(this.data, this.config, this.filename);
+        this.data.length > 0 &&
+            new Solr(this.data, this.config, this.filename);
     },
 
-    remove: function()
+    hasParsingErrors: function()
     {
-
+        return (this.entries.length - this.data.length) != 1;
     },
 
     isFilenameCorrect: function()
@@ -41,30 +44,39 @@ File.prototype = {
     onParseData: function(rawData, key)
     {
         var data = new Data(rawData, key, this.filename);
-        if (!data.isEmpty()) {
+        if (data.isValid()) {
             this.data.push(data.getParsed());
         }
     },
 
-    onReadFile: function (err, data)
+    onUnlink: function(err)
     {
-        if (err) {
-            evento.trigger("error", [this.filename, err].join(" | "));
-        } else {
-            this.entries = data.split("\n");
-            this.parseEntities();
-        }
+        err
+            ? evento.trigger("error", ["fs.unlink", err].join(" | "))
+            : evento.trigger("success", [this.filename, "deleted"].join(" | "));
     },
 
     parseEntities: function()
     {
-        evento.trigger("info", [this.filename, this.entries.length].join(" | "));
+        this.entries = this.rawData.split("\n");
         _.each(this.entries, _.bind(this.onParseData, this));
     },
 
     read: function()
     {
-        fs.readFile(this.filePath, 'utf-8', _.bind(this.onReadFile, this));
+        try {
+            this.rawData = fs.readFileSync(this.filePath, 'utf-8');
+        } catch(err) {
+            evento.trigger("error", ["fs.readFileSync", this.filename, err.message].join(" | "));
+            return;
+        }
+    },
+
+    unlink: function()
+    {
+        this.hasParsingErrors()
+            ? evento.trigger("warning", ["parsing errors", this.filename, this.entries.length, this.data.length].join(" | "))
+            : this.config.unlink && fs.unlink(this.filePath, _.bind(this.onUnlink, this));
     }
 };
 
