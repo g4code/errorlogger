@@ -10,7 +10,7 @@ function ErrorLogger(configPath) {
 
     informer.title("errorlogger")
             .titleColor("cyan");
-    
+
     evento.on("error",   _.bind(informer.error,   informer));
     evento.on("success", _.bind(informer.success, informer));
     evento.on("info",    _.bind(informer.info,    informer));
@@ -19,7 +19,7 @@ function ErrorLogger(configPath) {
 
     this.configPath = configPath;
     this.config     = null;
-    
+
     this.loadConfig();
     this.readFiles();
 }
@@ -28,22 +28,33 @@ ErrorLogger.prototype = {
 
     loadConfig: function()
     {
-        _.isUndefined(this.configPath) 
+        _.isUndefined(this.configPath)
             ? evento.trigger("error", "Config is required! -c [config path]")
             : this.config = require(this.configPath);
     },
-        
+
     onFile: function(filename)
     {
-        new File(filename, this.config.logDir);
+        new File(filename, this.config);
+    },
+
+    onReaddir: function(err, files)
+    {
+        if (err) {
+            evento.trigger("error", err);
+        } else if (files.length < 0) {
+            evento.trigger("info", "No files in " + path.resolve(this.config.directory));
+        } else {
+            evento.trigger("info", "Number of files: " + files.length);
+            _.each(files, _.bind(this.onFile, this));
+        }
     },
 
     readFiles: function()
     {
         if (this.config !== null) {
-            evento.trigger("info", "Log dir: " + path.resolve(this.config.logDir));
-            this.files = fs.readdirSync(path.resolve(this.config.logDir));
-            _.each(this.files, _.bind(this.onFile, this));
+            evento.trigger("info", "Log dir: " + path.resolve(this.config.directory));
+            fs.readdir(path.resolve(this.config.directory), _.bind(this.onReaddir, this));
         }
     }
 };

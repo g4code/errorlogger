@@ -31,7 +31,8 @@
     "informer"       : "*",
     "evento"         : "*",
     "moment"         : "*",
-    "moment-timezone": "*"
+    "moment-timezone": "*",
+    "request"        : "*"
   },
   "bin": {
     "errorlogger": "./bin/errorlogger.js"

@@ -6,8 +6,9 @@
 *.pid
 *.gz
 
-composer.phar
-vendor
+node_modules
+npm-debug.log
+playground
 
 .buildpath
 .project

@@ -2,13 +2,17 @@
 var fs     = require('fs'),
     path   = require('path'),
     _      = require('underscore'),
-    Data   = require('./data');
+    evento = require('evento'),
+    Data   = require('./data'),
+    Solr   = require('./solr');
 
-function File(filename, dir) {
+function File(filename, config) {
 
+    this.config   = config;
     this.filename = filename;
-    this.filePath = path.resolve(dir + "/" + filename);
+    this.filePath = path.resolve(this.config.directory + "/" + filename);
     this.data     = [];
+    this.entries  = [];
 
     if (this.isFilenameCorrect()) {
         this.read();
@@ -21,7 +25,7 @@ File.prototype = {
 
     addToSolr: function()
     {
-
+        new Solr(this.data, this.config, this.filename);
     },
 
     remove: function()
@@ -37,16 +41,30 @@ File.prototype = {
     onParseData: function(rawData, key)
     {
         var data = new Data(rawData, key, this.filename);
-
         if (!data.isEmpty()) {
             this.data.push(data.getParsed());
         }
     },
 
+    onReadFile: function (err, data)
+    {
+        if (err) {
+            evento.trigger("error", [this.filename, err].join(" | "));
+        } else {
+            this.entries = data.split("\n");
+            this.parseEntities();
+        }
+    },
+
+    parseEntities: function()
+    {
+        evento.trigger("info", [this.filename, this.entries.length].join(" | "));
+        _.each(this.entries, _.bind(this.onParseData, this));
+    },
+
     read: function()
     {
-        var raw = fs.readFileSync(this.filePath, 'utf-8');
-        _.each(raw.split("\n"), _.bind(this.onParseData, this));
+        fs.readFile(this.filePath, 'utf-8', _.bind(this.onReadFile, this));
     }
 };
 
