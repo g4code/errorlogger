@@ -26,11 +26,12 @@ Data.prototype = {
 
     hasParsedData: function()
     {
-        return this.parsed.type    !== undefined
-            && this.parsed.message !== undefined
-            && this.parsed.code !== undefined
-            && this.parsed.line !== undefined
-            && this.parsed.file !== undefined
+        return this.parsed          !== null
+            && this.parsed.type     !== undefined
+            && this.parsed.message  !== undefined
+            && this.parsed.code     !== undefined
+            && this.parsed.line     !== undefined
+            && this.parsed.file     !== undefined
             && this.parsed.datetime !== undefined;
     },
 
@@ -56,10 +57,10 @@ Data.prototype = {
     {
         try {
             this.parsed = JSON.parse(this.rawData);
-            this.modify();
         } catch(err) {
-            evento.trigger("warning", ["JSON.parse", this.filename, this.key, err].join(" | "));
+            this.parsed = null;
         }
+        this.modify();
     }
 };
 
