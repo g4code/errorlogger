@@ -48,8 +48,8 @@ Data.prototype = {
             this.parsed.trace    = this.parsed.trace === undefined ? '' : JSON.stringify(this.parsed.trace);
             this.parsed.context  = this.parsed.context === undefined ? '' : JSON.stringify(this.parsed.context);
             this.parsed.hostname = os.hostname();
-            this.parsed.created  = moment.utc(moment.tz(this.parsed.datetime, this.parsed.tz)).format('YYYY-MM-DDThh:mm:ss') + "Z";
-            this.parsed.saved    = moment.utc().format('YYYY-MM-DDThh:mm:ss') + "Z";
+            this.parsed.created  = moment.utc(moment.tz(this.parsed.datetime, this.parsed.tz)).format('YYYY-MM-DDTHH:mm:ss') + "Z";
+            this.parsed.saved    = moment.utc().format('YYYY-MM-DDTHH:mm:ss') + "Z";
         }
     },
 
